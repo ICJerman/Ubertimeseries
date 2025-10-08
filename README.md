@@ -1,148 +1,165 @@
 Uber 2024 — Ride Cancellation Modeling
 Objective
 
-Develop a predictive model to understand why and when Uber rides get canceled, identifying customer and driver behavior patterns to improve operational efficiency and reliability.
+The goal of this project is to predict why and when Uber rides get canceled by analyzing ride-level booking data.
+This helps uncover customer and driver behavior patterns and identify operational inefficiencies that affect ride completion rates.
 
 Dataset Overview
 
-The dataset contains approximately 148,770 rides from Uber’s 2024 operations, covering multiple vehicle types and payment methods across India.
+The dataset contains approximately 148,770 ride records from Uber’s 2024 operations.
+It includes various vehicle types, payment methods, and cancellation reasons.
 
-Metric	Value
-Total Bookings	148,770
-Completion Rate	65.96%
-Cancellation Rate	25%
-Customer Cancellations	19.15%
-Driver Cancellations	7.45%
-Vehicle Types	Go Mini, Go Sedan, Auto, eBike/Bike, UberXL, Premier Sedan
-Time Coverage	Full Year 2024
+Summary
 
-Key Columns
+Total Bookings: 148,770
 
-Booking Status: Completed, Cancelled by Customer, Cancelled by Driver, etc.
+Completion Rate: 65.96%
 
-Avg VTAT: Average wait time for driver (minutes)
+Cancellation Rate: 25%
 
-Avg CTAT: Average trip duration (minutes)
+Customer Cancellations: 19.15%
 
-Booking Value: Total fare amount (₹)
+Driver Cancellations: 7.45%
 
-Ride Distance: Distance of trip (km)
+Vehicle Types: Go Mini, Go Sedan, Auto, eBike/Bike, UberXL, Premier Sedan
 
-Payment Method: UPI, Cash, Credit Card, Uber Wallet, Debit Card
+Time Coverage: Full Year 2024
 
-Ratings and Reasons: Driver Rating, Customer Rating, Cancellation Reasons, Vehicle Type
+Main Columns
 
-Data Cleaning & Preparation
+Booking Status (Completed, Cancelled by Customer, Cancelled by Driver, etc.)
 
-Goals
+Avg VTAT – Average wait time for driver (minutes)
 
-Standardized inconsistent booking statuses (lowercased and stripped spaces).
+Avg CTAT – Average trip duration (minutes)
 
-Handled missing values with appropriate methods:
+Booking Value – Total fare (₹)
 
-Numeric features (ratings, distance, fare) → filled with mean or zero.
+Ride Distance – Distance traveled (km)
 
-Text features (cancellation reasons) → replaced with "Unknown".
+Payment Method – UPI, Cash, Credit Card, Uber Wallet, Debit Card
 
-Converted VTAT/CTAT from minutes to seconds for modeling.
+Ratings and Cancellation Reasons – Customer and driver feedback
 
-Combined Date and Time into a single Booking Datetime.
+Data Preparation
+Cleaning
 
-Engineered new time-based features:
+Standardized booking status text (e.g., lowercasing, removing spaces).
 
-Hour, Weekday, IsWeekend, IsRushHour
+Filled missing numeric values with column means or zeros.
 
-Added behavioral flags:
+Replaced missing text fields (reasons, methods) with "Unknown".
 
-IsCash, ShortRide, HighValue
+Converted VTAT and CTAT from minutes to seconds.
+
+Merged Date and Time into a single Booking Datetime column.
+
+Feature Engineering
+
+Created new derived columns to better capture behavior patterns:
+
+Time-based features: Hour, Weekday, IsWeekend, IsRushHour
+
+Behavioral flags: IsCash, ShortRide, HighValue
+
+These features improved the ability to predict cancellations and reveal context behind them.
 
 Modeling Approach
 
-A full end-to-end ML pipeline was built using scikit-learn, covering data preprocessing, modeling, and evaluation.
+An end-to-end machine learning pipeline was built using scikit-learn.
 
-Classification Tasks
+Tasks
 
-Binary Model: Predict if a ride will be completed or canceled.
+Binary Classification: Predict if a ride will be completed or canceled.
 
-Multiclass Model: Predict why the ride was canceled (Customer, Driver, No Driver, Incomplete).
+Multiclass Classification: Predict why it was canceled (Customer, Driver, No Driver, Incomplete).
 
-Models Implemented
+Models
 
-Logistic Regression (baseline)
+Logistic Regression (baseline model)
 
-Random Forest Classifier
+Random Forest Classifier (main model)
 
 HistGradientBoosting (advanced comparison)
 
-Pipeline Steps
+Pipeline Structure
 
 Preprocessing: median imputation, scaling, and one-hot encoding
 
-Model training: balanced class weights to handle label imbalance
+Modeling: used balanced class weights to handle label imbalance
 
-Evaluation: accuracy, precision, recall, F1-score, and confusion matrix
+Evaluation: accuracy, precision, recall, F1-score, and confusion matrices
 
 Results
-Binary Classification (Completed vs. Canceled)
+Binary Classification
 
 Accuracy: ~95%
 
-Precision/Recall: Strong balance
+Precision/Recall: strong balance
 
 Key Drivers: Total Duration, VTAT, Ride Distance, Booking Value
 
-Multiclass Classification (Cancellation Reasons)
+Multiclass Classification
 
 Accuracy: ~89%
 
-Insights:
+Key Insights:
 
 Driver cancellations peak during rush hours.
 
-Customer cancellations often stem from incorrect pickup details.
+Customer cancellations often occur due to incorrect addresses or delays.
 
-“No driver found” cases are more frequent in low-demand areas.
+“No driver found” happens mostly in low-demand areas.
 
 Top Feature Importances
-Feature	Importance
-Total Duration (sec)	0.27
-Avg VTAT (sec)	0.26
-Ride Distance	0.15
-Avg CTAT (sec)	0.10
-Booking Value	0.06
-Payment Method	0.05
-Hour	0.04
 
-(VTAT = Wait time before trip, CTAT = Trip duration)
+Total Duration (sec): 0.27
+
+Avg VTAT (sec): 0.26
+
+Ride Distance: 0.15
+
+Avg CTAT (sec): 0.10
+
+Booking Value: 0.06
+
+Payment Method: 0.05
+
+Hour: 0.04
+
+(VTAT = wait time before trip, CTAT = trip duration)
 
 Data Insights
 
-UPI accounts for nearly 40% of total revenue, followed by Cash (~25%).
+UPI accounts for roughly 40% of total revenue, followed by Cash (25%).
 
-Go Sedan and Auto dominate ride volume.
+Go Sedan and Auto rides make up the largest share of bookings.
 
-High wait times (VTAT > 10 min) are the most significant predictor of cancellation.
+Long wait times (VTAT > 10 minutes) sharply increase cancellation probability.
 
-Driver-related issues and address mismatches are top cancellation reasons.
+Driver-related issues and address mismatches are top cancellation causes.
 
 Key Learnings
 
-Wait time (VTAT) is the strongest cancellation predictor.
+Wait time is the strongest single predictor of cancellations.
 
-Time-based features (rush hours, weekends) significantly enhance prediction accuracy.
+Time-based patterns (rush hours, weekends) enhance predictive reliability.
 
-Combining EDA and ML provides both diagnostic and predictive understanding.
+Combining EDA and machine learning gives both diagnostic and predictive insights.
 
-Thoughtful feature engineering transforms raw data into actionable business metrics.
+Feature engineering significantly improves model explainability.
 
-Tech Stack
+Tools and Technologies
 
 Language: Python (Pandas, NumPy, Matplotlib, Seaborn, scikit-learn)
+
 Visualization: Power BI, Tableau
+
 Environment: Jupyter Notebook / Anaconda
+
 Version Control: GitHub
 
 Author
 
-CJ II
+Christopher Jerman II
 📧 chrissjerman@gmail.com
